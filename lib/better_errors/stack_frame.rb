@@ -77,7 +77,11 @@ module BetterErrors
         next if name == :"\#$!"
 
         if defined?(frame_binding.local_variable_get)
-          hash[name] = frame_binding.local_variable_get(name)
+          begin
+            hash[name] = frame_binding.local_variable_get(name)
+          rescue Exception => e
+            hash[name] = "Error reading variable #{name}: #{e.class.name}: #{e.message}"
+          end
         else
           hash[name] = frame_binding.eval(name.to_s)
         end
